@@ -19,6 +19,10 @@ router.post('/register', (req, res) => {
             res.sendStatus(200)
         }
     })
-}) 
+})
+
+router.post('/send_message', (req, res) => {
+    
+})
 
 module.exports = router
