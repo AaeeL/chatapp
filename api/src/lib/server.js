@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require('express')
 const cors  = require('cors')
 const bodyParser = require('body-parser')
@@ -18,6 +19,7 @@ chatAPIServer.use(session({
         maxAge: 300000
     }
 }))
+//chatAPIServer.use(env)
 chatAPIServer.use(bodyParser.json())
 chatAPIServer.use(cors())
 chatAPIServer.use('/api', chatRouter )
