@@ -28,6 +28,7 @@ router.post('/register', (req, res) => {
 
 router.post('/login', (req, res) => {
     const username = req.body.username
+    console.log(username)
     const password = req.body.password
     const response = authenticateUser(username, password)
     Promise.resolve(response).then(result => {

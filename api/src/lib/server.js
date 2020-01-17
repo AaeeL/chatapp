@@ -8,9 +8,8 @@ const chatRouter = require('../routes/routes')
 
 const chatAPIServer = express()
 const PORT = 5001
-
 chatAPIServer.use(session({
-    secret: 'very secret key',
+    secret: process.env.SESSION_PWD,
     resave: false,
     saveUninitialized: false,
     user: [],
