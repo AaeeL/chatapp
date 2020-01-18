@@ -1,44 +1,45 @@
-const express = require('express')
-const uniqid = require('uniqid')
-const crypto = require('crypto')
-const router = express.Router()
-const net = require('net')
-const algorithm = 'aes-192-cbc'
+const express = require('express');
+const uniqid = require('uniqid');
+const router = express.Router();
+const net = require('net');
+const crypt = require('bcrypt');
 
 const options = {
-    host: '127.0.0.1',
-    port: 65432
-}
+  host: '127.0.0.1',
+  port: 65432
+};
 
-const { insertNewUser, authenticateUser } = require('../services/dbServices')
+const { insertNewUser, authenticateUser } = require('../services/dbServices');
 
-router.post('/register', (req, res) => {
-    const username = req.body.username
-    const password = req.body.password
-    const response = insertNewUser(uniqid(), username, password, new Date)
-    Promise.resolve(response).then(result => {
-        if(result.name) {
-            res.sendStatus(400)
-        }
-        else {
-            res.sendStatus(200)
-        }
-    })
-})
+router.post('/register', async (req, res) => {
+  const username = req.body.username;
+
+  const salt = await crypt.genSalt(parseInt(process.env.SALT_ROUNDS));
+  const hash = await crypt.hash(req.body.password, salt);
+
+  const response = await insertNewUser(
+    uniqid.process(),
+    username,
+    hash,
+    new Date()
+  );
+
+  if (response.name) res.sendStatus(400);
+  else res.sendStatus(200);
+});
 
 router.post('/login', (req, res) => {
-    const username = req.body.username
-    console.log(username)
-    const password = req.body.password
-    const response = authenticateUser(username, password)
-    Promise.resolve(response).then(result => {
-        if(result.length === 0) {
-            res.sendStatus(400)
-        }
-        else {
-            res.sendStatus(200)
-        }
-    })
-})
+  const username = req.body.username;
+  console.log(req.session);
+  const password = req.body.password;
+  const response = authenticateUser(username, password);
+  Promise.resolve(response).then(result => {
+    if (result.length === 0) {
+      res.sendStatus(400);
+    } else {
+      res.sendStatus(200);
+    }
+  });
+});
 
-module.exports = router
+module.exports = router;
