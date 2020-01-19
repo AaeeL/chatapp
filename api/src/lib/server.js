@@ -10,13 +10,13 @@ const chatAPIServer = express();
 const PORT = 5001;
 chatAPIServer.use(
   session({
-    secret: process.env.SESSION_PASSWORD,
+    name: 'chatsession',
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-    user: [],
     cookie: {
-      //secure: true,
-      maxAge: 300000
+      secure: true,
+      maxAge: 1000 * 60
     }
   })
 );

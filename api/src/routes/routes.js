@@ -1,14 +1,18 @@
+//for router
 const express = require('express');
-const uniqid = require('uniqid');
 const router = express.Router();
+
+//for creating unique id
+const uniqid = require('uniqid');
+
+//socket configurations
 const net = require('net');
+const options = require('../../sock.conf');
+
+//for crypting user passwords
 const crypt = require('bcrypt');
 
-const options = {
-  host: process.env.SOCKET_HOST,
-  port: process.env.SOCKET_PORT
-};
-
+//database services
 const {
   insertNewUser,
   userAuthenticate,
@@ -38,9 +42,15 @@ router.post('/login', async (req, res) => {
     const result = await crypt.compare(req.body.password, response[0].password);
     if (!result) res.sendStatus(400);
     else {
+      let connectionObj = {
+        socket: null,
+        id: null
+      };
       //add last_login date
       addLastLogin(new Date(), response[0].user_id);
+
       //create socket for user
+      const socket = net.Socket();
       //add user to session
       res.sendStatus(200);
     }
