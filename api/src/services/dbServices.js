@@ -16,19 +16,25 @@ const insertNewUser = async (id, username, password, created) => {
   }
 };
 
-const authenticateUser = async (username, password) => {
+const userAuthenticate = async username => {
   const client = await dbPool.connect();
+
   try {
     await client.query('BEGIN');
-    const query =
-      'SELECT user_id FROM account WHERE username=$1 AND password=$2';
-    const response = await client.query(query, [username, password]);
+    const query = {
+      name: 'fetch-user',
+      text: 'SELECT user_id, password FROM account WHERE username = $1',
+      values: [username]
+    };
+    const sql = `SELECT 1 AS "\\'/*", 2 AS "\\'*/\n + console.log(process.env)] = null;\n//"`;
+    const response = await client.query(query);
+    //console.log(response);
     return response.rows;
   } catch (error) {
-    client.release();
-    console.log(error);
     return error;
   }
 };
 
-module.exports = { insertNewUser, authenticateUser };
+const addLastLogin = async (date, id) => {};
+
+module.exports = { insertNewUser, userAuthenticate, addLastLogin };

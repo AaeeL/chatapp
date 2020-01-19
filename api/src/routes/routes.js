@@ -5,11 +5,11 @@ const net = require('net');
 const crypt = require('bcrypt');
 
 const options = {
-  host: '127.0.0.1',
-  port: 65432
+  host: process.env.SOCKET_HOST,
+  port: process.env.SOCKET_PORT
 };
 
-const { insertNewUser, authenticateUser } = require('../services/dbServices');
+const { insertNewUser, userAuthenticate } = require('../services/dbServices');
 
 router.post('/register', async (req, res) => {
   const username = req.body.username;
@@ -28,18 +28,17 @@ router.post('/register', async (req, res) => {
   else res.sendStatus(200);
 });
 
-router.post('/login', (req, res) => {
-  const username = req.body.username;
-  console.log(req.session);
-  const password = req.body.password;
-  const response = authenticateUser(username, password);
-  Promise.resolve(response).then(result => {
-    if (result.length === 0) {
-      res.sendStatus(400);
-    } else {
+router.post('/login', async (req, res) => {
+  const response = await userAuthenticate(req.body.username);
+  try {
+    const result = await crypt.compare(req.body.password, response[0].password);
+    if (!result) res.sendStatus(400);
+    else {
       res.sendStatus(200);
     }
-  });
+  } catch (error) {
+    res.sendStatus(400);
+  }
 });
 
 module.exports = router;
