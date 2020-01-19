@@ -26,15 +26,30 @@ const userAuthenticate = async username => {
       text: 'SELECT user_id, password FROM account WHERE username = $1',
       values: [username]
     };
-    const sql = `SELECT 1 AS "\\'/*", 2 AS "\\'*/\n + console.log(process.env)] = null;\n//"`;
     const response = await client.query(query);
-    //console.log(response);
+    await client.release();
     return response.rows;
   } catch (error) {
+    await client.release();
     return error;
   }
 };
 
-const addLastLogin = async (date, id) => {};
+const addLastLogin = async (date, id) => {
+  const client = await dbPool.connect();
+  try {
+    await client.query('BEGIN');
+    const query = {
+      name: 'update-last-login',
+      text: 'UPDATE account SET last_login=$1 WHERE user_id=$2',
+      values: [date, id]
+    };
+    await client.query(query);
+    await client.query('COMMIT');
+    await client.release();
+  } catch (error) {
+    await client.release();
+  }
+};
 
 module.exports = { insertNewUser, userAuthenticate, addLastLogin };

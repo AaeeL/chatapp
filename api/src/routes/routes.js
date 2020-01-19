@@ -9,7 +9,11 @@ const options = {
   port: process.env.SOCKET_PORT
 };
 
-const { insertNewUser, userAuthenticate } = require('../services/dbServices');
+const {
+  insertNewUser,
+  userAuthenticate,
+  addLastLogin
+} = require('../services/dbServices');
 
 router.post('/register', async (req, res) => {
   const username = req.body.username;
@@ -34,6 +38,10 @@ router.post('/login', async (req, res) => {
     const result = await crypt.compare(req.body.password, response[0].password);
     if (!result) res.sendStatus(400);
     else {
+      //add last_login date
+      addLastLogin(new Date(), response[0].user_id);
+      //create socket for user
+      //add user to session
       res.sendStatus(200);
     }
   } catch (error) {
