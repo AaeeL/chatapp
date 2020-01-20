@@ -55,7 +55,6 @@ router.post('/login', async (req, res) => {
         writable: true
       });
       socket.connect(options);
-      console.log(socket.connecting);
       //add user to session
       res.sendStatus(200);
     }

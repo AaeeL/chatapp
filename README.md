@@ -1,2 +1,3 @@
 # Chat-app
-### nothing worth noting here yet :(
+
+Just a simple chat application featuring API and a server.
