@@ -4,6 +4,10 @@ import selectors
 
 sel = selectors.DefaultSelector()
 
+def _connection_wrapper(key):
+    print(key)
+    sys.exit(0)
+
 if len(sys.argv) != 3:
     print('Please specify host and port!')
     print('usage', sys.argv[0], ' <HOST> <PORT>')
@@ -21,7 +25,7 @@ try:
     while True:
         events = sel.select(timeout=None)
         for key, mask in events:
-            
+            _connection_wrapper(key)
 except KeyboardInterrupt:
     print('caught keyboard interrupt, closing')
 finally:

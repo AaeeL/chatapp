@@ -50,7 +50,12 @@ router.post('/login', async (req, res) => {
       addLastLogin(new Date(), response[0].user_id);
 
       //create socket for user
-      const socket = net.Socket();
+      const socket = net.Socket({
+        readable: true,
+        writable: true
+      });
+      socket.connect(options);
+      console.log(socket.connecting);
       //add user to session
       res.sendStatus(200);
     }
