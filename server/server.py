@@ -1,12 +1,17 @@
 import sys
+import types
 import socket
 import selectors
 
 sel = selectors.DefaultSelector()
 
-def _connection_wrapper(key):
-    print(key)
-    sys.exit(0)
+def accept_connection(sock):
+    conn, addr = sock.accept()
+    print('accepted connection from', addr)
+    conn.setblocking(False)
+    data = types.SimpleNamespace(addr=addr, inb=b'', outb=b'')
+    events = selectors.EVENT_READ | selectors.EVENT_WRITE
+    sel.register(conn, events, data=data)
 
 if len(sys.argv) != 3:
     print('Please specify host and port!')
@@ -25,7 +30,10 @@ try:
     while True:
         events = sel.select(timeout=None)
         for key, mask in events:
-            _connection_wrapper(key)
+            if key.data is None:
+                accept_connection(key.fileobj)
+            else:
+                pass
 except KeyboardInterrupt:
     print('caught keyboard interrupt, closing')
 finally:
