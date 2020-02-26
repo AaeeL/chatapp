@@ -37,30 +37,21 @@ router.post('/register', async (req, res) => {
 });
 
 router.post('/login', async (req, res) => {
-  const response = await userAuthenticate(req.body.username);
-  try {
-    const result = await crypt.compare(req.body.password, response[0].password);
-    if (!result) res.sendStatus(400);
-    else {
-      let connectionObj = {
-        socket: null,
-        id: null
-      };
-      //add last_login date
-      addLastLogin(new Date(), response[0].user_id);
+  const socket = net.Socket();
+  socket.connect(options, () => {
+    console.log('Connected!');
+    socket.write('Hello there server!');
+  });
 
-      //create socket for user
-      const socket = net.Socket({
-        readable: true,
-        writable: true
-      });
-      socket.connect(options);
-      //add user to session
-      res.sendStatus(200);
-    }
-  } catch (error) {
-    res.sendStatus(400);
-  }
+  socket.on('data', data => {
+    console.log('Received ' + data);
+  });
+
+  res.send('under construction');
+});
+
+router.post('/server_response', (req, res) => {
+  console.log(req.body);
 });
 
 module.exports = router;
